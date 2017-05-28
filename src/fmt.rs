@@ -1,4 +1,3 @@
-use std::time;
 use std::fmt;
 
 use decomposed::DecomposedTime;
@@ -34,7 +33,7 @@ impl fmt::Display for DecomposedTime {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use decomposed::{DecomposedTime, Decompose};
+    use decomposed::Decompose;
     use float_duration::FloatDuration;
 
     #[test]

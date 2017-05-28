@@ -262,5 +262,29 @@ mod tests {
                    (FloatDuration::years(5.0) + FloatDuration::days(10.0))
                        .decompose()
                        .unwrap());
+
+        assert_eq!(DecomposedTime::zero(),
+                   FloatDuration::zero().decompose().unwrap());
+        assert_eq!(DecomposedTime::default().with_days(10).with_minutes(30),
+                   (FloatDuration::days(10.0) + FloatDuration::minutes(30.0))
+                       .decompose()
+                       .unwrap());
+        assert_eq!(DecomposedTime::default()
+                       .with_seconds(30)
+                       .with_fractional_seconds(0.5),
+                   (FloatDuration::seconds(30.5)).decompose().unwrap());
+
+        assert_eq!(DecomposedTime::default()
+                       .with_fractional_seconds(0.2)
+                       .milliseconds(),
+                   200);
+        assert_eq!(DecomposedTime::default()
+                       .with_fractional_seconds(0.00005)
+                       .microseconds(),
+                   50);
+        assert_eq!(DecomposedTime::default()
+                       .with_fractional_seconds(0.00000005)
+                       .nanoseconds(),
+                   50);
     }
 }
