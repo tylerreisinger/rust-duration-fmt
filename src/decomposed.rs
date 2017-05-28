@@ -233,12 +233,8 @@ fn decomposed_from_float_seconds(secs: f64) -> DecomposedTime {
     rem_seconds -= minutes * SECS_PER_MINUTE;
     let seconds = rem_seconds.trunc();
 
-    rem_seconds = fractional_seconds;
-    let milliseconds = (rem_seconds * MILLIS_PER_SEC).trunc();
-    rem_seconds -= milliseconds / MILLIS_PER_SEC;
-    let microseconds = (rem_seconds * MICROS_PER_SEC).trunc();
-    rem_seconds -= microseconds / MICROS_PER_SEC;
-    let nanoseconds = (rem_seconds * NANOS_PER_SEC).trunc();
+    let (milliseconds, microseconds, nanoseconds) =
+        decompose_fractional_seconds(fractional_seconds);
 
     DecomposedTime {
         years: years as u64,
@@ -246,9 +242,9 @@ fn decomposed_from_float_seconds(secs: f64) -> DecomposedTime {
         hours: hours as u32,
         minutes: minutes as u32,
         seconds: seconds as u32,
-        milliseconds: milliseconds as u32,
-        microseconds: microseconds as u32,
-        nanoseconds: nanoseconds as u32,
+        milliseconds: milliseconds,
+        microseconds: microseconds,
+        nanoseconds: nanoseconds,
         fractional_seconds: fractional_seconds,
         sign_num: sign_num as i8,
     }
