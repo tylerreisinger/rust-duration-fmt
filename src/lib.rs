@@ -6,3 +6,4 @@ extern crate float_duration;
 extern crate chrono;
 
 pub mod decomposed;
+pub mod fmt;

@@ -20,5 +20,8 @@ version = "^0.3.2"
 optional = true
 default-features = false
 
+[dev-dependencies]
+float_duration = { version = "^0.3.2", default-features = false }
+
 [features]
 default = ["float_duration", "chrono"]
