@@ -232,7 +232,8 @@ fn decomposed_from_float_seconds(secs: f64) -> DecomposedTime {
     let minutes = (rem_seconds / SECS_PER_MINUTE).trunc();
     rem_seconds -= minutes * SECS_PER_MINUTE;
     let seconds = rem_seconds.trunc();
-    rem_seconds -= seconds;
+
+    rem_seconds = fractional_seconds;
     let milliseconds = (rem_seconds * MILLIS_PER_SEC).trunc();
     rem_seconds -= milliseconds / MILLIS_PER_SEC;
     let microseconds = (rem_seconds * MICROS_PER_SEC).trunc();
