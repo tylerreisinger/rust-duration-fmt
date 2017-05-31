@@ -9,13 +9,14 @@ const FIELD_DELIMITER: char = '%';
 pub enum FormatError {
     UnexpectedFieldDelimiter,
     UnknownField,
-    FormatError(fmt::Error),
+    FmtError,
     DecomposeError,
+    ValueOutOfRange,
 }
 
 impl From<fmt::Error> for FormatError {
-    fn from(err: fmt::Error) -> FormatError {
-        FormatError::FormatError(err)
+    fn from(_: fmt::Error) -> FormatError {
+        FormatError::FmtError
     }
 }
 
@@ -107,8 +108,20 @@ impl<'a> DurationFormat<'a> {
             'H' => write!(f, "{:02}", self.time.hours()).map_err(|e| e.into()),
             'D' => write!(f, "{}", self.time.days()).map_err(|e| e.into()),
             'Y' => write!(f, "{}", self.time.years()).map_err(|e| e.into()),
-            'T' => write!(f, "{}", self.time.total_hours()).map_err(|e| e.into()),
-            'U' => write!(f, "{}", self.time.total_days()).map_err(|e| e.into()),
+            'T' => {
+                if let Some(hours) = self.time.total_hours() {
+                    write!(f, "{}", hours).map_err(|e| e.into())
+                } else {
+                    Err(FormatError::ValueOutOfRange)
+                }
+            }
+            'U' => {
+                if let Some(hours) = self.time.total_days() {
+                    write!(f, "{}", hours).map_err(|e| e.into())
+                } else {
+                    Err(FormatError::ValueOutOfRange)
+                }
+            }
             FIELD_DELIMITER => f.write_char(field).map_err(|e| e.into()),
             _ => Err(FormatError::UnknownField),
         }
@@ -124,7 +137,6 @@ impl<'a> fmt::Display for DurationFormat<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use decomposed::{Decompose, DecomposedTime};
     use float_duration::FloatDuration;
 
     #[test]

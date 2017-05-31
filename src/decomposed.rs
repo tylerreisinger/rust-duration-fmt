@@ -63,17 +63,20 @@ impl DecomposedTime {
     pub fn years(&self) -> u64 {
         self.years
     }
-    pub fn total_days(&self) -> u64 {
-        assert!(self.years() < (u64::MAX / (366)), "total days out of range");
-        self.days() as u64 + self.years() * 365
+    pub fn total_days(&self) -> Option<u64> {
+        self.years()
+            .checked_mul(365)
+            .and_then(|x| x.checked_add(self.days() as u64))
     }
     pub fn days(&self) -> u32 {
         self.days
     }
-    pub fn total_hours(&self) -> u64 {
-        assert!(self.years() < (u64::MAX / (366 * 24)),
-                "total hours out of range");
-        self.hours() as u64 + (self.days() as u64 + self.years() * 365) * 24
+    pub fn total_hours(&self) -> Option<u64> {
+        self.years()
+            .checked_mul(365)
+            .and_then(|x| x.checked_add(self.days() as u64))
+            .and_then(|x| x.checked_mul(24))
+            .and_then(|x| x.checked_add(self.hours() as u64))
     }
     pub fn hours(&self) -> u32 {
         self.hours
@@ -214,6 +217,12 @@ impl Decompose for time::Duration {
     fn decompose(self) -> Result<DecomposedTime, ()> {
         Ok(decomposed_from_float_seconds(self.as_secs() as f64 +
                                          (self.subsec_nanos() as f64) * NANOS_PER_SEC))
+    }
+}
+impl Decompose for DecomposedTime {
+    type Error = ();
+    fn decompose(self) -> Result<DecomposedTime, ()> {
+        Ok(self)
     }
 }
 
