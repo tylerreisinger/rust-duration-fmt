@@ -1,5 +1,6 @@
 use std::fmt;
 use std::time;
+use std::u64;
 
 #[cfg(feature = "float_duration")]
 use float_duration::{duration, FloatDuration};
@@ -62,8 +63,17 @@ impl DecomposedTime {
     pub fn years(&self) -> u64 {
         self.years
     }
+    pub fn total_days(&self) -> u64 {
+        assert!(self.years() < (u64::MAX / (366)), "total days out of range");
+        self.days() as u64 + self.years() * 365
+    }
     pub fn days(&self) -> u32 {
         self.days
+    }
+    pub fn total_hours(&self) -> u64 {
+        assert!(self.years() < (u64::MAX / (366 * 24)),
+                "total hours out of range");
+        self.hours() as u64 + (self.days() as u64 + self.years() * 365) * 24
     }
     pub fn hours(&self) -> u32 {
         self.hours
